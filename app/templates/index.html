@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>EV Shared Fast Charging Simulator</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <header class="hero">
+      <div>
+        <h1>EV shared fast charging structure</h1>
+        <p>
+          Configure the DC cabinet, MUX, EV fleet, ISO 15118 server scheduler, and data lake
+          to simulate shared fast charging sessions.
+        </p>
+      </div>
+      <button id="schedule-btn" class="primary">Run scheduler tick</button>
+    </header>
+
+    <main class="grid">
+      <section class="card">
+        <h2>DC Cabinet</h2>
+        <p class="subtext">Provide n-line DC power output and line power configuration.</p>
+        <form id="cabinet-form" class="form-grid">
+          <label>
+            Number of DC lines
+            <input type="number" name="num_lines" min="1" max="24" step="1" />
+          </label>
+          <label>
+            Power per line (kW)
+            <input type="number" name="line_power_kw" min="10" max="2000" step="5" />
+          </label>
+          <label>
+            DC bus voltage (V)
+            <input type="number" name="bus_voltage_v" min="200" max="1000" step="10" />
+          </label>
+        </form>
+      </section>
+
+      <section class="card">
+        <h2>MUX (n × m)</h2>
+        <p class="subtext">
+          Configure the switching matrix that connects cabinet lines to EV outputs.
+        </p>
+        <form id="mux-form" class="form-grid">
+          <label>
+            Inputs (from cabinet)
+            <input type="number" name="num_inputs" min="1" max="24" step="1" />
+          </label>
+          <label>
+            Outputs (EV ports)
+            <input type="number" name="num_outputs" min="1" max="64" step="1" />
+          </label>
+          <label>
+            Switch latency (ms)
+            <input type="number" name="switch_latency_ms" min="0" max="5000" step="50" />
+          </label>
+        </form>
+        <div class="toggle-row">
+          <span>Outputs enabled</span>
+          <div id="mux-outputs" class="toggle-list"></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>EV Fleet</h2>
+        <p class="subtext">Tune the EV count, SOCs, dwell time, and urgency.</p>
+        <form id="fleet-form" class="form-grid">
+          <label>
+            Number of EVs
+            <input type="number" name="ev_count" min="1" max="64" step="1" />
+          </label>
+          <label>
+            Initial SOC (%)
+            <input type="number" name="initial_soc_percent" min="1" max="100" step="1" />
+          </label>
+          <label>
+            Default dwell time (min)
+            <input type="number" name="default_dwell_min" min="1" max="240" step="1" />
+          </label>
+          <label>
+            Urgency level (1-5)
+            <input type="number" name="urgency_level" min="1" max="5" step="1" />
+          </label>
+        </form>
+      </section>
+
+      <section class="card">
+        <h2>ISO 15118 Server</h2>
+        <p class="subtext">
+          Scheduler checks EV SOCs every T-time interval, selects N EVs, and commands the MUX.
+        </p>
+        <form id="scheduler-form" class="form-grid">
+          <label>
+            Scheduler interval (sec)
+            <input type="number" name="interval_sec" min="10" max="600" step="10" />
+          </label>
+          <label>
+            Weight: SOC priority
+            <input type="number" name="w_soc" min="0" max="1" step="0.05" />
+          </label>
+          <label>
+            Weight: wait time
+            <input type="number" name="w_wait" min="0" max="1" step="0.05" />
+          </label>
+          <label>
+            Weight: urgency
+            <input type="number" name="w_urgency" min="0" max="1" step="0.05" />
+          </label>
+        </form>
+        <div class="status-box">
+          <h3>EV session status</h3>
+          <div class="table" id="session-table"></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Data lake</h2>
+        <p class="subtext">
+          Query and download recorded charging session events for analytics.
+        </p>
+        <div class="form-grid">
+          <label>
+            Filter by EV ID
+            <input type="number" id="datalake-filter" min="0" step="1" placeholder="All EVs" />
+          </label>
+          <button id="datalake-refresh" class="secondary">Refresh data</button>
+          <a id="datalake-download" class="secondary" href="/api/datalake/download">Download CSV</a>
+        </div>
+        <div class="table" id="datalake-table"></div>
+      </section>
+    </main>
+
+    <footer>
+      <p>Built with the iso15118 Python package to model ISO 15118 server sessions.</p>
+    </footer>
+
+    <script src="/static/app.js"></script>
+  </body>
+</html>
