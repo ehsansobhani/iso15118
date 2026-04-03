@@ -1,0 +1,6 @@
+feature_groups:
+  - demographics
+  - rfm
+  - category
+  - temporal
+  - basket
