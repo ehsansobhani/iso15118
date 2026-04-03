@@ -1,0 +1,5 @@
+candidates:
+  - s_learner
+  - t_learner
+  - x_learner
+selection_metric: auuc

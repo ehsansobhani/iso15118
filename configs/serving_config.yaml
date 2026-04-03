@@ -1,0 +1,6 @@
+service:
+  name: retail-media-campaign-optimizer
+  version: 0.1.0
+endpoints:
+  - /v1/health
+  - /v1/rank
